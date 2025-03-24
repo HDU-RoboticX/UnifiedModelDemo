@@ -240,6 +240,7 @@ void showUserInterface() {
     putText(interface, "Press 'Enter' to Display , Press 'Esc' to Exit", Point(20, 160), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 0), 1);
     imshow("UnifiedModelDisplay", interface);
     int Thr;
+    string src = "./resource/res";
     
     // Wait for the user to press Enter
     while (true) {
@@ -253,14 +254,17 @@ void showUserInterface() {
                 delay = 99;
             }
             switch (toolSize) {
-                case 1:scale = 5; binaryImage = imread("D:\\VCProj\\UnifiedModelDemo\\resource\\res5.hdu", IMREAD_GRAYSCALE); break;
-                case 2:scale = 10; binaryImage = imread("D:\\VCProj\\UnifiedModelDemo\\resource\\res10.hdu", IMREAD_GRAYSCALE); break;
-                case 3:scale = 20; binaryImage = imread("D:\\VCProj\\UnifiedModelDemo\\resource\\res20.hdu", IMREAD_GRAYSCALE); break;
-                case 4:scale = 30; binaryImage = imread("D:\\VCProj\\UnifiedModelDemo\\resource\\res30.hdu", IMREAD_GRAYSCALE); break;
-                case 5:scale = 40; binaryImage = imread("D:\\VCProj\\UnifiedModelDemo\\resource\\res40.hdu", IMREAD_GRAYSCALE); break;
-                default:scale = 5; binaryImage = imread("D:\\VCProj\\UnifiedModelDemo\\resource\\res20.hdu", IMREAD_GRAYSCALE); break;
+                case 1:scale = 5; break;
+                case 2:scale = 10; break;
+                case 3:scale = 20; break;
+                case 4:scale = 30; break;
+                case 5:scale = 40; break;
+                default:scale = 5; break;
             }
-            
+            src = "./resource/res";
+            src.append(to_string(scale));
+            src.append(".hdu");
+            binaryImage = imread(src, IMREAD_GRAYSCALE);
             if (binaryImage.empty()) {
                 cerr << "Error: Could not load image!" << endl;
                 return;
