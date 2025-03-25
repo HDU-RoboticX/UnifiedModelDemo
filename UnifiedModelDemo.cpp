@@ -17,6 +17,12 @@ int delay = 60;
 Mat binaryImage;
 Mat originImage;
 
+const int BUTTON_WIDTH = 350;
+const int BUTTON_HEIGHT = 50;
+
+Rect button1(20, 50, BUTTON_WIDTH, BUTTON_HEIGHT);
+Rect button2(20, 120, BUTTON_WIDTH, BUTTON_HEIGHT);
+
 
 // Function to judge whether two pixel values are equal
 bool judge(uchar a, uchar b) {
@@ -186,7 +192,7 @@ void animateCircleAlongBoundary(const Mat& binaryImage , Mat originImage) {
     // Move along the smoothed and evenly distributed path
     for (size_t i = 0; i < uniformPath.size(); i++) {
         Mat frame = originImage.clone();
-        //cvtColor(frame, frame, COLOR_GRAY2BGR); // 转换为彩色图像，以便绘制彩色圆
+        //cvtColor(frame, frame, COLOR_GRAY2BGR); // RGB image trans
 
         // Draw a circle
         circle(frame, uniformPath[i], scale, Scalar(0, 0, 255), -1);
@@ -198,6 +204,36 @@ void animateCircleAlongBoundary(const Mat& binaryImage , Mat originImage) {
         } // Press ESC to exit
     }
 
+}
+
+Mat QuickConvertBin(Mat img, int throld) {
+    for (int i = 0; i < img.rows; i++)//rows
+    {
+        for (int j = 0; j < img.cols; j++)//cols
+        {
+            if (img.at<uchar>(i, j) > throld) {
+                img.at<uchar>(i, j) = 255;
+            }
+            else {
+                img.at<uchar>(i, j) = 0;
+            }
+        }
+    }
+    return img;
+}
+
+void EAB_Gen_Demo() {
+    originImage = imread("D:\\VCProj\\UnifiedModelDemo\\resource\\leaf.png");
+    if (originImage.empty()) {
+        cerr << "Error: Could not load image!" << endl;
+        return;
+    }
+    cvtColor(originImage, originImage, CV_BGR2GRAY);//gray image
+    originImage = QuickConvertBin(originImage, 128);
+    Interface instance;
+    Mat result = instance.EAB_IAB_Extraction(originImage, 20, 255);// para:(binaryImageOfTarget,toolScale,contactResolution)
+    imshow("Main Menu", result);
+    waitKey(0);
 }
 
 Mat pixFilter(Mat img, int threshold) {
@@ -245,7 +281,7 @@ void showUserInterface() {
     // Wait for the user to press Enter
     while (true) {
         int key = waitKey(10);
-        if (key == 13 || key == 10) { // 回车键
+        if (key == 13 || key == 10) { 
             Thr = (int)((float)cntRate * 2.55);
             if (Thr < 1) {
                 Thr = 1;
@@ -278,15 +314,76 @@ void showUserInterface() {
     cv::destroyWindow("UnifiedModelDisplay");
 }
 
-int main() {
+// callback function
+void onMouse(int event, int x, int y, int, void*) {
+    if (event == EVENT_LBUTTONDOWN) {
+        if (button1.contains(Point(x, y))) {
+            cout << "Button 1 Clicked: Running showUserInterface()" << endl;
+            showUserInterface();
+        }
+        else if (button2.contains(Point(x, y))) {
+            cout << "Button 2 Clicked: Running showContactRate()" << endl;
+            showUserInterface();
+        }
+    }
+}
+
+// background
+void drawGradientBackground(Mat& img) {
+    for (int i = 0; i < img.rows; i++) {
+        float alpha = (float)i / img.rows;
+        Vec3b topColor(200, 230, 255);  
+        Vec3b bottomColor(100, 150, 255);  
+        Vec3b color = topColor * (1 - alpha) + bottomColor * alpha;
+        img.row(i).setTo(color);
+    }
+}
+
+// draw rectBtn
+void drawButtons(Mat& img) {
+    Scalar btnColor(50, 150, 255);  // btn
+    Scalar borderColor(0, 0, 0);  // bd
+    Scalar textColor(255, 255, 255);  // txt
+
+    rectangle(img, button1, borderColor, 2);
+    rectangle(img, button1.tl() + Point(1, 1), button1.br() - Point(1, 1), btnColor, FILLED);
+    putText(img, "Unified Model Display", button1.tl() + Point(20, 38), FONT_HERSHEY_SIMPLEX, 0.8, textColor, 2);
+
+    rectangle(img, button2, borderColor, 2);
+    rectangle(img, button2.tl() + Point(1, 1), button2.br() - Point(1, 1), btnColor, FILLED);
+    putText(img, "Real-time Contact Rate", button2.tl() + Point(30, 38), FONT_HERSHEY_SIMPLEX, 0.8, textColor, 2);
+}
+
+void Display() {
     // Load the original image
     originImage = imread("D:\\VCProj\\UnifiedModelDemo\\resource\\origin.hdu");
     if (originImage.empty()) {
         cerr << "Error: Could not load image!" << endl;
-        return -1;
+        return;
     }
 
-    showUserInterface();
+    //showUserInterface();
+
+    Mat menu(350, 400, CV_8UC3);
+    drawGradientBackground(menu);  // set background 
+    drawButtons(menu);  // set btn
+    namedWindow("Main Menu", WINDOW_AUTOSIZE);
+    setMouseCallback("Main Menu", onMouse, nullptr);
+    imshow("Main Menu", menu);
+    while (true) {
+        int k = waitKey(20);
+        if (k == 27)
+            break;
+    }
+}
+
+
+
+int main() {
+    
+    Display();
+    
+    EAB_Gen_Demo();
 
     return 0;
 }
