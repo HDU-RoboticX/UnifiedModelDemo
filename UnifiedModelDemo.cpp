@@ -263,9 +263,34 @@ void EAB_Gen(int scale,int resolution) {
     maskImage = QuickConvertBin(maskImage, 128);
     Interface instance;
     Mat result = instance.EAB_IAB_Extraction(maskImage, scale, resolution);// para:(binaryImageOfTarget,toolScale,contactResolution)
-    imwrite(".\\ModelGenerate\\ResultDisplayGray.png", result);
+    imwrite(".\\ModelGenerate\\mapping\\map1.png", result);
     Mat colorRes = ConvertColorResFromBin(result);
-    imwrite(".\\ModelGenerate\\ResultDisplayBGR.png", colorRes);
+    imwrite(".\\ModelGenerate\\heat_map\\heat_map1.png", colorRes);
+
+    maskImage = imread(".\\ModelGenerate\\binaryResource2.png");
+    if (maskImage.empty()) {
+        cerr << "Error: Could not load image!" << endl;
+        return;
+    }
+    cvtColor(maskImage, maskImage, CV_BGR2GRAY);//gray image
+    maskImage = QuickConvertBin(maskImage, 128);
+    result = instance.EAB_IAB_Extraction(maskImage, scale, resolution);// para:(binaryImageOfTarget,toolScale,contactResolution)
+    imwrite(".\\ModelGenerate\\mapping\\map2.png", result);
+    colorRes = ConvertColorResFromBin(result);
+    imwrite(".\\ModelGenerate\\heat_map\\heat_map2.png", colorRes);
+
+    maskImage = imread(".\\ModelGenerate\\binaryResource3.png");
+    if (maskImage.empty()) {
+        cerr << "Error: Could not load image!" << endl;
+        return;
+    }
+    cvtColor(maskImage, maskImage, CV_BGR2GRAY);//gray image
+    maskImage = QuickConvertBin(maskImage, 128);
+    result = instance.EAB_IAB_Extraction(maskImage, scale, resolution);// para:(binaryImageOfTarget,toolScale,contactResolution)
+    imwrite(".\\ModelGenerate\\mapping\\map3.png", result);
+    colorRes = ConvertColorResFromBin(result);
+    imwrite(".\\ModelGenerate\\heat_map\\heat_map3.png", colorRes);
+
 #ifdef _WIN32
     system("msg * The contact result is generated in .\\ModelGenerate\\");
 #elif __APPLE__
