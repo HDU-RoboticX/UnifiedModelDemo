@@ -1,4 +1,4 @@
-# Unified Geometric Contact Modeling
+# Bio-Inspired Unified Model for representing Geometric Relations in Robotic Visual Perception
 
 This repository provides an implementation of a unified geometric modeling framework for contact perception and interaction. The framework includes three core modules:
 
